@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sshimizu <sshimizu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/10 11:20:14 by sshimizu          #+#    #+#             */
-/*   Updated: 2023/02/12 05:24:30 by sshimizu         ###   ########.fr       */
+/*   Created: 2023/02/11 11:15:54 by sshimizu          #+#    #+#             */
+/*   Updated: 2023/02/12 05:20:49 by sshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*buffer_flush(char *buffer)
 {
@@ -91,24 +91,24 @@ char	*get_line(char *block, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*buffer[OPEN_MAX];
 	char		*block;
 	char		*line;
 
-	if (fd < 0)
+	if (fd < 0 || fd > OPEN_MAX - 1)
 		return (NULL);
-	if (!buffer)
+	if (!buffer[fd])
 	{
-		buffer = malloc(BUFFER_SIZE);
-		if (!buffer)
+		buffer[fd] = malloc(BUFFER_SIZE);
+		if (!buffer[fd])
 			return (NULL);
-		buffer[0] = '\0';
+		buffer[fd][0] = '\0';
 	}
-	block = read_block(fd, buffer);
+	block = read_block(fd, buffer[fd]);
 	if (!block)
-		return (ft_free(&buffer));
-	line = get_line(block, buffer);
+		return (ft_free(&buffer[fd]));
+	line = get_line(block, buffer[fd]);
 	if (!line)
-		ft_free(&buffer);
+		ft_free(&buffer[fd]);
 	return (line);
 }
